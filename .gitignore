@@ -1,0 +1,4 @@
+server/config.json
+server/sheets_keys.json
+__pycache__/*
+server/__pycache__/*
