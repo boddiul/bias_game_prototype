@@ -17,6 +17,8 @@ sheets = SheetsController(config["spreadsheet_id"])
  
 settings = sheets.get_table_as_dict("settings")
 
+prompts = sheets.get_table_as_dict("prompts")
+
 cards_list = sheets.get_table_with_header("cards")
 
 
@@ -33,6 +35,7 @@ game = {}
 def new_game():
     print("NEW GAME CALLED")
     new_game = GameSession(ll_model = chatgpt,
+                           prompts = prompts,
                            cards_list = cards_list)
     
     session_id = new_game.id
