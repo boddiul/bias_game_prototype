@@ -11,7 +11,7 @@ class DeckBuilder {
             scene,
             GAME_WIDTH / 2,
             GAME_HEIGHT * 0.9,
-            "START",
+            getCaption("start"),
             onStart
         );
 

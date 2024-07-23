@@ -17,7 +17,9 @@ class ChatGPTController:
             model = self.model, 
             messages=[
                 {"role": "user", "content": prompt}
-            ]
+            ],
+            temperature = 1
         )
-        print(response)
-        return response.choices[0].message.content.strip()
+        text_response = response.choices[0].message.content.strip()
+        print(text_response)
+        return text_response

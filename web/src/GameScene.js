@@ -8,6 +8,7 @@ class GameScene extends Phaser.Scene {
 
     create() {
         backendController.startSession(
+            lang,
             function () {
                 console.log("DONE");
 
@@ -38,7 +39,7 @@ class GameScene extends Phaser.Scene {
             this,
             GAME_WIDTH * 0.25,
             GAME_HEIGHT * 0.4,
-            "IGNORE",
+            getCaption("ignore"),
             function () {
                 if (this.canUseNextAction()) {
                     this.currentTitle.remove("left");
@@ -59,7 +60,7 @@ class GameScene extends Phaser.Scene {
             this,
             GAME_WIDTH * 0.75,
             GAME_HEIGHT * 0.4,
-            "POST",
+            captions["post"][lang],
             function () {
                 if (this.canUseNextAction()) {
                     this.currentTitle.remove("right");

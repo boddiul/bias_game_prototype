@@ -17,7 +17,10 @@ sheets = SheetsController(config["spreadsheet_id"])
  
 settings = sheets.get_table_as_dict("settings")
 
-prompts = sheets.get_table_as_dict("prompts")
+prompts = sheets.get_table_as_dict_2d("prompts")
+
+captions = sheets.get_table_as_dict_2d("captions")
+
 
 cards_list = sheets.get_table_with_header("cards")
 
@@ -31,12 +34,23 @@ CORS(app)
 
 game = {}
 
-@app.route('/api/new_game', methods=['GET'])
+@app.route('/api/get_captions',methods=['GET'])
+def get_captions():
+
+    return jsonify({"languages": settings['languages'].split(', '),
+                   "captions":captions})
+
+@app.route('/api/new_game', methods=['POST'])
 def new_game():
     print("NEW GAME CALLED")
+
+    data = request.json
+    language = data["language"]
+
     new_game = GameSession(ll_model = chatgpt,
                            prompts = prompts,
-                           cards_list = cards_list)
+                           cards_list = cards_list,
+                           language = language)
     
     session_id = new_game.id
 

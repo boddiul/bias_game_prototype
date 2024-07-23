@@ -20,6 +20,28 @@ class SheetsController:
         data = self.get_table_raw(worksheet_title)
         return {item[0]: item[1] for item in data if len(item) == 2} 
     
+    def get_table_as_dict_2d(self, worksheet_title):
+        # Get the raw data from the worksheet
+        data = self.get_table_raw(worksheet_title)
+        
+        # Extract the header row (first row)
+        header = data[0]
+        
+        # Initialize an empty dictionary to hold the result
+        table_dict = {}
+        
+        # Iterate over the rows in the data, starting from the second row
+        for row in data[1:]:
+            if len(row) == len(header):  # Ensure the row length matches the header length
+                # The first column is the key
+                key = row[0]
+                # Create a dictionary for the values with header as keys
+                value_dict = {header[i]: row[i] for i in range(1, len(header))}
+                # Assign this dictionary to the corresponding key in the table_dict
+                table_dict[key] = value_dict
+        
+        return table_dict
+    
     def get_table_with_header(self, worksheet_title):
         data = self.get_table_raw(worksheet_title)
         keys = data[0]

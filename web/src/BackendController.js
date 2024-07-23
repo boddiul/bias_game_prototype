@@ -22,11 +22,15 @@ class BackendController {
         return result;
     }
 
-    async startSession(onComplete) {
+    async getCaptions(onComplete) {
+        await this.apiCall("get_captions", "GET", null, onComplete);
+    }
+
+    async startSession(language, onComplete) {
         await this.apiCall(
             "new_game",
-            "GET",
-            null,
+            "POST",
+            { language: language },
             function (data) {
                 this.id = data.session_id;
                 if (onComplete) onComplete();

@@ -3,12 +3,15 @@ import uuid
 
 
 class GameSession:
-    def __init__(self, ll_model: ChatGPTController, prompts : dict, cards_list: list):
+    def __init__(self, ll_model: ChatGPTController, prompts : dict, cards_list: list, language: str):
 
 
         self.ll_model = ll_model
         self.prompts = prompts
         self.id = str(uuid.uuid1())
+
+
+        self.lang = language
 
         self.cards = {}
 
@@ -19,11 +22,16 @@ class GameSession:
 
     def get_cards(self):
 
-        return list(self.cards.values())
+        cards_data = []
+
+        for c in self.cards.values():
+            cards_data.append({'id': c['id'],'name' : c['name_'+self.lang]})
+
+        return cards_data
 
     def next_title(self):
 
-        new_title = self.ll_model.get_response(self.prompts['create_news_title'])
+        new_title = self.ll_model.get_response(self.prompts['create_news_title'][self.lang])
 
         self.current_title = new_title
         self.modified_title = ""
@@ -38,20 +46,20 @@ class GameSession:
             return self.modified_title
             
 
-        tt = self.prompts['apply_to_title'].format(self.current_title)
+        tt = self.prompts['apply_to_title'][self.lang].format(self.current_title)
         tt += " "
 
         if len(selected_card_ids)>1:
             
-            tt += self.prompts['bias_multiple']+" "
+            tt += self.prompts['bias_multiple'][self.lang]+" "
             
             for c_id in selected_card_ids:
-                tt += ", "+self.cards[c_id]["name"]
+                tt += ", "+self.cards[c_id]["name_"+self.lang]
             
         else:
-            tt += self.cards[selected_card_ids[0]]["name"]
+            tt += self.cards[selected_card_ids[0]]["name_"+self.lang]
             
-            tt += " "+self.prompts['bias_single']
+            tt += " "+self.prompts['bias_single'][self.lang]
         
 
         tt += ":"
