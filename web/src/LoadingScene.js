@@ -28,5 +28,7 @@ class LoadingScene extends Phaser.Scene {
         // Load assets
         this.load.image("card", "assets/card.png");
         this.load.image("button", "assets/button.png");
+
+        this.load.plugin('rextagtextplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rextagtextplugin.min.js', true);
     }
 }
