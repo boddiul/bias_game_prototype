@@ -12,10 +12,14 @@ class Deck {
 
         const rows = 2;
 
-        const rowSize = Math.floor(cardsData.length / rows) + 1;
-        console.log(rows, rowSize);
+        const rowSize = Math.floor(cardsData.length / rows + 0.5);
         let xx = 0;
         let yy = 0;
+
+        let sz = GAME_WIDTH / rowSize;
+        if (sz > GAME_WIDTH / (this.maxSelect + 0.5))
+            sz = GAME_WIDTH / (this.maxSelect + 0.5);
+
         for (let i = 0; i < cardsData.length; i++) {
             let c = new Card(
                 this.scene,
@@ -23,8 +27,8 @@ class Deck {
                 cardsData[i].id,
                 cardsData[i].name,
                 (GAME_WIDTH / rowSize) * (xx + 0.5),
-                GAME_HEIGHT * 0.9 + (-rows + yy + 1) * 150,
-                GAME_WIDTH / (rowSize - 1)
+                GAME_HEIGHT * 1.01 + (-rows + yy + 1) * sz * 0.8,
+                sz
             );
 
             this.cards.push(c);

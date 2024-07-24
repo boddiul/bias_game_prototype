@@ -25,7 +25,8 @@ class GameSession:
         cards_data = []
 
         for c in self.cards.values():
-            cards_data.append({'id': c['id'],'name' : c['name_'+self.lang]})
+            if c['include'] == '1':
+                cards_data.append({'id': c['id'],'name' : c['name_'+self.lang]})
 
         return cards_data
 

@@ -6,9 +6,12 @@ class Card {
 
         this.startX = x;
         this.startY = y;
+        this.startAngle = -6 + (x / GAME_WIDTH) * 12;
 
         this.container.x = x;
         this.container.y = y;
+
+        this.container.angle = this.startAngle;
 
         this.container.setScale(width / 400);
 
@@ -18,9 +21,9 @@ class Card {
 
         let img = scene.add.image(0, 0, "card");
 
-        let txt = scene.add.text(0, 0, name.replaceAll(" ", "\n"), {
+        let txt = scene.add.text(0, -160, name.replaceAll(" ", "\n"), {
             color: "black",
-            fontSize: "45px",
+            fontSize: "40px",
             align: "center",
         });
 
@@ -55,13 +58,14 @@ class Card {
         }
     }
 
-    moveTo(x, y) {
+    moveTo(x, y, angle) {
         if (this.scene) {
             this.moving = true;
             this.scene.tweens.add({
                 targets: this.container,
                 x: x,
                 y: y,
+                angle: angle,
                 ease: "Power3",
                 onComplete: function () {
                     this.moving = false;
@@ -77,7 +81,7 @@ class Card {
 
         let pos = this.deck.getSlotPosition(this.slot);
 
-        this.moveTo(pos.x, pos.y);
+        this.moveTo(pos.x, pos.y, -10 + Math.random() * 20);
 
         this.selected = true;
     }
@@ -88,6 +92,6 @@ class Card {
         this.selected = false;
         this.slot = null;
 
-        this.moveTo(this.startX, this.startY);
+        this.moveTo(this.startX, this.startY, this.startAngle);
     }
 }
