@@ -1,10 +1,15 @@
-import openai
+from openai import OpenAI
 
 
 class ChatGPTController:
     def __init__(self, chatgpt_key: str, model: str):
 
-        openai.api_key = chatgpt_key
+        self.client = OpenAI(
+            api_key=chatgpt_key,
+        )
+
+
+
         self.model = model
 
         self.tokens_input = 0
@@ -16,7 +21,7 @@ class ChatGPTController:
     def get_response(self, prompt, system_message):
         print("__________________________________________________")
         print(prompt)
-        response = openai.ChatCompletion.create(
+        response = self.client.chat.completions.create(
             model = self.model, 
             messages=[
                 {"role" : "system","content" : system_message},
