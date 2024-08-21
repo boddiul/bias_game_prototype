@@ -76,7 +76,7 @@ class NewsTitle {
         this.currentText = newText;
 
         const cleanWordFunc = (word) =>
-            word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"]/g, "").toLowerCase();
+            word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"«»]/g, "").toLowerCase();
 
         const currentCleanWords = this.currentText.split(" ").map(cleanWordFunc);
         const originalCleanWords = this.originalText.split(" ").map(cleanWordFunc);

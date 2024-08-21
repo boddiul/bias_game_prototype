@@ -17,6 +17,8 @@ sheets = SheetsController(config["spreadsheet_id"])
  
 settings = sheets.get_table_as_dict("settings")
 
+themes = sheets.get_table_as_dict_2d("themes")
+
 prompts = sheets.get_table_as_dict_2d("prompts")
 
 captions = sheets.get_table_as_dict_2d("captions")
@@ -50,6 +52,7 @@ def new_game():
     new_game = GameSession(ll_model = chatgpt,
                            prompts = prompts,
                            cards_list = cards_list,
+                           themes = themes,
                            language = language)
     
     session_id = new_game.id
