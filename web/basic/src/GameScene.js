@@ -8,6 +8,7 @@ class GameScene extends Phaser.Scene {
 
     create() {
         backendController.startSession(
+            "basic",
             lang,
             function () {
                 console.log("DONE");

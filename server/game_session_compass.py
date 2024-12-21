@@ -4,7 +4,7 @@ import random
 
 
 
-class GameSession:
+class GameSessionCompass:
     def __init__(self, ll_model: ChatGPTController, prompts : dict, cards_list: list, themes : dict, language: str):
 
 
@@ -29,6 +29,40 @@ class GameSession:
 
         self.current_title = None
 
+        self.left_right = 0
+        self.world_tension = 0
+
+
+
+    def action(self,action_type,action_data):
+
+        
+        if action_type == "get_cards":
+            cards = self.get_cards()
+            return {"cards": cards}
+        elif action_type == "start":
+            next_title, themes = self.next_title()
+            return {"next_title": next_title, "themes": themes}
+        elif action_type == "apply_cards":
+
+            selected_card_ids = action_data["selected_card_ids"]
+
+            modified_title = self.apply_cards(selected_card_ids)
+
+            return {"modified_title": modified_title}
+        
+        elif action_type == "action_ignore":
+            next_title, themes = self.action_ignore()
+            return {"next_title": next_title, "themes": themes}
+        elif action_type == "action_post":
+            next_title, themes = self.action_post()
+            return {"next_title": next_title, "themes": themes}
+        elif action_type == "stats":
+            return {"left_right": self.left_right, "world_tension": self.world_tension}
+        
+
+
+
     def get_cards(self):
 
         cards_data = []
@@ -52,24 +86,24 @@ class GameSession:
 
 
         if len(selected_themes)==1:
-            prompt += self.prompts['news_title_theme_single'][self.lang]
+            prompt += self.prompts['g0_news_title_theme_single'][self.lang]
         else:
-            prompt += self.prompts['news_title_theme_multiple'][self.lang]
+            prompt += self.prompts['g0_news_title_theme_multiple'][self.lang]
 
         prompt += " " + ", ".join(selected_themes) +".\n"
 
 
         if len(previous_titles) > 0:
             if len(selected_themes)==1:
-                prompt += self.prompts['title_history_theme_single'][self.lang]
+                prompt += self.prompts['g0_title_history_theme_single'][self.lang]
             else:
-                prompt += self.prompts['title_history_theme_multiple'][self.lang]
+                prompt += self.prompts['g0_title_history_theme_multiple'][self.lang]
             
-            prompt += " "+self.prompts['news_title_theme_prev_description'][self.lang]
+            prompt += " "+self.prompts['g0_news_title_theme_prev_description'][self.lang]
 
-        prompt += self.prompts['news_title_neutral_task'][self.lang]
+        prompt += self.prompts['g0_news_title_neutral_task'][self.lang]
 
-        new_title = self.ll_model.get_response(prompt,self.prompts['main_instructions'][self.lang])
+        new_title = self.ll_model.get_response(prompt,self.prompts['g1_main_instructions'][self.lang])
 
         new_title = new_title.strip('"')
         self.current_title = {
@@ -94,28 +128,28 @@ class GameSession:
             return self.current_title["original_text"]
             
 
-        tt = self.prompts['apply_to_title1'][self.lang].format(self.current_title["original_text"])
+        tt = self.prompts['g0_apply_to_title1'][self.lang].format(self.current_title["original_text"])
         tt += " "
 
 
         
         if len(selected_card_ids)>1:
             
-            tt += self.prompts['bias_multiple'][self.lang]+"\n"
+            tt += self.prompts['g0_bias_multiple'][self.lang]+"\n"
             
             
         else:
             
-            tt += self.prompts['bias_single'][self.lang] + "\n"
+            tt += self.prompts['g0_bias_single'][self.lang] + "\n"
 
         for c_id in selected_card_ids:
                 
             tt += self.cards[c_id]["name_"+self.lang] + " ("+self.cards[c_id]["prompt_"+self.lang]+")\n"
             
-        tt += self.prompts['apply_to_title2'][self.lang]
+        tt += self.prompts['g0_apply_to_title2'][self.lang]
 
 
-        title = self.ll_model.get_response(tt,self.prompts['main_instructions'][self.lang])
+        title = self.ll_model.get_response(tt,self.prompts['g1_main_instructions'][self.lang])
         title = title.strip('"')
         
         self.current_title["modified_text"] = title
@@ -128,7 +162,7 @@ class GameSession:
         self.current_title["modified_text"] = None
         self.current_title["used_cards"] = []
         
-        self.current_title["player_action_description"] = self.prompts['player_action_ignore'][self.lang]
+        self.current_title["player_action_description"] = self.prompts['g0_player_action_ignore'][self.lang]
 
         self.compute_consequence()
 
@@ -140,9 +174,9 @@ class GameSession:
         self.current_title["posted"] = True
 
         if self.current_title["modified_text"] == None:
-            self.current_title["player_action_description"] = self.prompts['player_action_original'][self.lang]
+            self.current_title["player_action_description"] = self.prompts['g0_player_action_original'][self.lang]
         else:
-            self.current_title["player_action_description"] = self.prompts['player_action_modify'][self.lang] +" (" +", ".join(map(lambda n: self.cards[n]["name_"+self.lang], self.current_title["used_cards"]))+ ")"
+            self.current_title["player_action_description"] = self.prompts['g0_player_action_modify'][self.lang] +" (" +", ".join(map(lambda n: self.cards[n]["name_"+self.lang], self.current_title["used_cards"]))+ ")"
 
         self.compute_consequence()
 
@@ -158,12 +192,12 @@ class GameSession:
 
         if len(previous_titles)>0:
             if len(self.current_title["themes"])==1:
-                prompt += self.prompts['title_history_theme_single'][self.lang]
+                prompt += self.prompts['g0_title_history_theme_single'][self.lang]
             else:
-                prompt += self.prompts['title_history_theme_multiple'][self.lang]
+                prompt += self.prompts['g0_title_history_theme_multiple'][self.lang]
         
         
-        prompt += self.prompts['compute_consequence1'][self.lang] + " "+self.current_title["original_text"] + "\n"
+        prompt += self.prompts['g0_compute_consequence1'][self.lang] + " "+self.current_title["original_text"] + "\n"
         
         
         prompt += self.current_title['player_action_description'] 
@@ -174,9 +208,9 @@ class GameSession:
             prompt += "\n"
 
 
-        prompt += self.prompts['compute_consequence2'][self.lang]
+        prompt += self.prompts['g0_compute_consequence2'][self.lang]
 
-        consequence = self.ll_model.get_response(prompt,self.prompts['main_instructions'][self.lang])
+        consequence = self.ll_model.get_response(prompt,self.prompts['g1_main_instructions'][self.lang])
 
         self.current_title['consequence_description'] = consequence
 
@@ -203,3 +237,4 @@ class GameSession:
             prompt += "\n"
 
         return prompt
+    

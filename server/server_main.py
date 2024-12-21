@@ -5,7 +5,8 @@ import json
 from sheets_controller import SheetsController
 from chatgpt_controller import ChatGPTController
 
-from game_session import GameSession
+from game_session_basic import GameSessionBasic
+from game_session_compass import GameSessionCompass
 
 config = {}
 
@@ -48,12 +49,21 @@ def new_game():
 
     data = request.json
     language = data["language"]
+    game_type = data["game_type"]
 
-    new_game = GameSession(ll_model = chatgpt,
-                           prompts = prompts,
-                           cards_list = cards_list,
-                           themes = themes,
-                           language = language)
+    new_game = None
+    if game_type == "basic":
+        new_game = GameSessionBasic(ll_model = chatgpt,
+                            prompts = prompts,
+                            cards_list = cards_list,
+                            themes = themes,
+                            language = language)
+    elif game_type == "compass":
+        new_game = GameSessionCompass(ll_model = chatgpt,
+                            prompts = prompts,
+                            cards_list = cards_list,
+                            themes = themes,
+                            language = language)
     
     session_id = new_game.id
 
@@ -63,58 +73,13 @@ def new_game():
 
 
 
-@app.route('/api/get_cards', methods=['POST'])
-def get_cards():
+
+@app.route('/api/game_action', methods=['POST'])
+def game_action():
     data = request.json
     session_id = data["session_id"]
 
-    cards = game[session_id].get_cards()
-
-    return jsonify({"cards": cards})
-
-
-@app.route('/api/start', methods=['POST'])
-def start():
-    data = request.json
-    session_id = data["session_id"]
-
-    next_title = game[session_id].next_title()
-
-    return jsonify({"next_title": next_title})
-
-
-
-@app.route('/api/apply_cards', methods=['POST'])
-def apply_cards():
-    data = request.json
-    session_id = data["session_id"]
-    print(data)
-    selected_card_ids = data["selected_card_ids"]
-
-    modified_title = game[session_id].apply_cards(selected_card_ids)
-
-    return jsonify({"modified_title": modified_title})
-
-
-
-@app.route('/api/action_ignore', methods=['POST'])
-def action_ignore():
-    data = request.json
-    session_id = data["session_id"]
-
-    next_title = game[session_id].action_ignore()
-
-    return jsonify({"next_title": next_title})
-
-
-@app.route('/api/action_post', methods=['POST'])
-def action_post():
-    data = request.json
-    session_id = data["session_id"]
-
-    next_title = game[session_id].action_post()
-    
-    return jsonify({"next_title": next_title})
+    return jsonify(game[session_id].action(data["action_type"],data["action_data"]))
 
 
 if __name__ == '__main__':
